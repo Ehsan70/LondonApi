@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LondonApi.Controllers
 {
     [Route("api/[controller]")]
+    [ApiVersion("2.0")]
     public class ValuesController : Controller
     {
         // GET api/values

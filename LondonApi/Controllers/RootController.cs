@@ -8,6 +8,7 @@ namespace LondonApi.Controllers
 {
     // Tells the routing system to respond to root requests
     [Route("/")]
+    [ApiVersion("1.0")]
     public class RootController : Controller
     {
         [HttpGet(Name = nameof(GetRoot))]

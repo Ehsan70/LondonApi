@@ -6,6 +6,7 @@ using LandonApi.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -78,6 +79,17 @@ namespace LondonApi
             });
             // using lowerclasses
             services.AddRouting(opt => opt.LowercaseUrls = true);
+
+            services.AddApiVersioning(opt =>
+            {
+                // Using Mediatype versioning
+                opt.ApiVersionReader = new MediaTypeApiVersionReader();
+                opt.AssumeDefaultVersionWhenUnspecified = true; // Assumes the default version if no other version is specified. 
+                opt.ReportApiVersions = true; // Make version reported in header responce.
+                opt.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0); // Default API version is set to 1.0
+                opt.ApiVersionSelector = new CurrentImplementationApiVersionSelector(opt);
+                // Now you can use ApiVersion("1.0") attribute for each controller
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
