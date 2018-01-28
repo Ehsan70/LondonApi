@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LandonApi.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,22 +15,75 @@ namespace LondonApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        /*
+         The Startup class:
+            1. Can optionally include a ConfigureServices method to configure the app's services.
+            2. Must include a Configure method to create the app's request processing pipeline.
+
+        ConfigureServices and Configure are called by the runtime when the app starts:
+        */
+        public Startup(IHostingEnvironment env, IConfiguration configuration)
         {
-            Configuration = configuration;
+            /*
+             The Startup class constructor accepts dependencies defined by the host. A common use of dependency injection into the Startup class is to inject:
+                IHostingEnvironment to configure services by environment.
+                IConfiguration to configure the app during startup.
+             */
+            HostingEnvironment = env;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            this.Configuration = builder.Build();
+            Configuration = builder.Build();
         }
 
+        public IHostingEnvironment HostingEnvironment { get; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            /*
+             The ConfigureServices method is:
+                1. Optional.
+                2. Called by the web host before the Configure method to configure the app's services.
+
+             The Configure method is used to specify how the app responds to HTTP requests. The request pipeline is configured by adding middleware components to an IApplicationBuilder instance. 
+             IApplicationBuilder is available to the Configure method, but it isn't registered in the service container. 
+             */
+            if (HostingEnvironment.IsDevelopment())
+            {
+                // Development configuration
+
+            }
+            else
+            {
+                // Staging/Production configuration
+
+            }
+
+            // Add framework services
+            services.AddMvc(opt =>
+            {
+                // OutputFormatters contains all the classes that can format the output of a response like json or text output formatter
+                // Grabing a refrence to json output formatter. SIngle makes sure one and only one json formatter is returned. 
+                JsonOutputFormatter jsonFormatter = opt.OutputFormatters.OfType<JsonOutputFormatter>().Single();
+                // Removing the old Json outputformmater. 
+                opt.OutputFormatters.Remove(jsonFormatter);
+                // Adding an instance of our ion output by passing a refrence to json formmater that was retrived from the list
+                opt.OutputFormatters.Add(new IonOutputFormatter(jsonFormatter));
+                // With the above configuration we would see <<  Content-Type →application/ion+json; charset=utf-8  >> in our response. 
+            });
+            // using lowerclasses
+            services.AddRouting(opt => opt.LowercaseUrls = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // Order of call matters here. 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
