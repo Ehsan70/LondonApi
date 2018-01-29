@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LandonApi.Infrastructure;
+using LondonApi.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -68,6 +69,9 @@ namespace LondonApi
             // Add framework services
             services.AddMvc(opt =>
             {
+                // Add JsonExceptionFilter to filters
+                opt.Filters.Add(typeof(JsonExceptionFilter));
+
                 // OutputFormatters contains all the classes that can format the output of a response like json or text output formatter
                 // Grabing a refrence to json output formatter. SIngle makes sure one and only one json formatter is returned. 
                 JsonOutputFormatter jsonFormatter = opt.OutputFormatters.OfType<JsonOutputFormatter>().Single();

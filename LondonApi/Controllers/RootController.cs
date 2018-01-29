@@ -17,7 +17,8 @@ namespace LondonApi.Controllers
             var response = new
             {
                 // This will generate a absolute url. No route paramaters 
-                href = Url.Link(nameof(GetRoot),null)
+                href = Url.Link(nameof(GetRoot), null),
+                rooms = new { href = Url.Link(nameof(RoomsController.GetRooms), null)}
             };
 
             return Ok(response);
