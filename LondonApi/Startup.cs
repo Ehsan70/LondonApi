@@ -6,6 +6,7 @@ using LandonApi.Infrastructure;
 using LondonApi.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ namespace LondonApi
 {
     public class Startup
     {
+        private readonly int? _httpPort; 
         /*
          The Startup class:
             1. Can optionally include a ConfigureServices method to configure the app's services.
@@ -39,6 +41,17 @@ namespace LondonApi
                 .AddEnvironmentVariables();
             this.Configuration = builder.Build();
             Configuration = builder.Build();
+
+            // Get the HTTPS port only in development 
+            if (env.IsDevelopment())
+            {
+                var launchJsonConfig = new ConfigurationBuilder()
+                    .SetBasePath(env.ContentRootPath)
+                    .AddJsonFile("Properties\\launchSettings.json")
+                    .Build();
+                // Getting value of type integer from the path iisSettings:iisExpress:sslPort in the launchSetting.json
+                _httpPort = launchJsonConfig.GetValue<int>("iisSettings:iisExpress:sslPort");
+            }
         }
 
         public IHostingEnvironment HostingEnvironment { get; }
@@ -71,6 +84,10 @@ namespace LondonApi
             {
                 // Add JsonExceptionFilter to filters
                 opt.Filters.Add(typeof(JsonExceptionFilter));
+
+                // Require HTTPS for all controllers. Redirects clients to encrypted HTTPS connecitons
+                opt.SslPort = _httpPort;
+                opt.Filters.Add(typeof(RequireHttpsAttribute));
 
                 // OutputFormatters contains all the classes that can format the output of a response like json or text output formatter
                 // Grabing a refrence to json output formatter. SIngle makes sure one and only one json formatter is returned. 
