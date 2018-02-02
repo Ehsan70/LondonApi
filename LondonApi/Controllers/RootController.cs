@@ -9,6 +9,7 @@ namespace LondonApi.Controllers
     // Tells the routing system to respond to root requests
     [Route("/")]
     [ApiVersion("1.0")]
+    // [RequireHttps] This would make this controller encrypted.
     public class RootController : Controller
     {
         [HttpGet(Name = nameof(GetRoot))]
