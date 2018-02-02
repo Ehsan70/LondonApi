@@ -121,7 +121,19 @@ namespace LondonApi
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseHsts(opt =>
+            {
+                // Max age of the header. Client/browser rememebers how long it should rememeber the setting?
+                // It's common to set this to very high
+                opt.MaxAge(days: 180);
+                // Add it not just to root domain but also other subdomains
+                opt.IncludeSubdomains();
+                // Browser/client can assume the site uses hsts 
+                opt.Preload();
 
+                // After all of the above the response will include the hsts header
+
+            });
             app.UseMvc();
         }
     }
