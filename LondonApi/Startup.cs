@@ -65,6 +65,7 @@ namespace LondonApi
 
             // Use an in-memory database for qucik dev and testing
             // Use real database in production
+            // Note that because we use in memory database, any data will be lost when the applcaition closes. So we have load test data in startup
             services.AddDbContext<HotelApiContext>(opt => opt.UseInMemoryDatabase());
 
             /*
@@ -132,6 +133,10 @@ namespace LondonApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                // Add some test data in development
+                var context = app.ApplicationServices.GetRequiredService<HotelApiContext>();
+                AddTestData(context);
             }
             app.UseHsts(opt =>
             {
@@ -147,6 +152,26 @@ namespace LondonApi
 
             });
             app.UseMvc();
+        }
+
+        private static void AddTestData(HotelApiContext context)
+        {
+            // Adding some test data for development
+            context.Rooms.Add(new RoomEntity
+            {
+                Id = Guid.Parse("301df04d-8679-4b1b-ab92-0a586ae53d08"),
+                Name = "Oxford Suite",
+                Rate = 10119,
+            });
+
+            context.Rooms.Add(new RoomEntity
+            {
+                Id = Guid.Parse("ee2b83be-91db-4de5-8122-35a9e9195976"),
+                Name = "Driscoll Suite",
+                Rate = 23959
+            });
+
+            context.SaveChanges();
         }
     }
 }
