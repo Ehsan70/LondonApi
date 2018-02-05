@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LandonApi.Controllers;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,9 @@ namespace LondonApi.Controllers
             {
                 // This will generate a absolute url. No route paramaters 
                 href = Url.Link(nameof(GetRoot), null),
-                rooms = new { href = Url.Link(nameof(RoomsController.GetRooms), null)}
+                rooms = new { href = Url.Link(nameof(RoomsController.GetRooms), null)},
+                info = new { href = Url.Link(nameof(InfoController.GetInfo), null) }
+
             };
 
             return Ok(response);

@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LandonApi.Infrastructure;
-using LandonApi.Models;
-using LondonApi.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using LandonApi.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc;
+using LandonApi.Models;
+using Microsoft.EntityFrameworkCore;
+using LandonApi;
+using LondonApi.Filters;
 
 namespace LondonApi
 {
@@ -61,6 +62,11 @@ namespace LondonApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            // Use an in-memory database for qucik dev and testing
+            // Use real database in production
+            services.AddDbContext<HotelApiContext>(opt => opt.UseInMemoryDatabase());
+
             /*
              The ConfigureServices method is:
                 1. Optional.
