@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LandonApi.Infrastructure;
+using LandonApi.Models;
 using LondonApi.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -111,6 +112,11 @@ namespace LondonApi
                 opt.ApiVersionSelector = new CurrentImplementationApiVersionSelector(opt);
                 // Now you can use ApiVersion("1.0") attribute for each controller
             });
+
+            // This line pull the properties form the info section of the appSettings.json and then creates a new instance of Hotelinfo from those values 
+            // Then it wraps the HotelInfo instance in an interface called IOptions and puts that into service container.
+            // Once it's in service container it can be injected into contrllers.
+            services.Configure<HotelInfo>(Configuration.GetSection("Info"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
